@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Socket IO</title>
+
+        <script src="/socket.io/socket.io.js"></script>
+
+        <script defer>
+            const form = document.getElementById('form')
+
+            var socket = io();
+            setTimeout(() => {
+                socket.emit("new-message", "hello")
+            }, 3000)
+
+            socket.on("received-message", (msg) => {
+                console.log(msg);
+            })
+
+            form.addEventListener('submit', (e) => {
+
+            })
+        </script>
+
+    </head>
+
+    <body>
+        <form id="form">
+            <input type="text">
+            <button type="submit">Send</button>
+        </form>
+    </body>
+
+</html>
