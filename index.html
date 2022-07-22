@@ -6,33 +6,81 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Socket IO</title>
-
-        <script src="/socket.io/socket.io.js"></script>
-
-        <script defer>
-            const form = document.getElementById('form')
-
-            var socket = io();
-            setTimeout(() => {
-                socket.emit("new-message", "hello")
-            }, 3000)
-
-            socket.on("received-message", (msg) => {
-                console.log(msg);
-            })
-
-            form.addEventListener('submit', (e) => {
-
-            })
-        </script>
-
     </head>
 
     <body>
-        <form id="form">
+        <ul id="recent_msg"></ul>
+
+        <form id="msg-form">
+            <label for="">Type your message</label>
+            <br>
             <input type="text">
             <button type="submit">Send</button>
         </form>
+
+        <form id="name-form">
+            <label for="">Your name</label>
+            <br>
+            <input type="text">
+            <button type="submit">Send</button>
+        </form>
+
+
+
+
+
+        <script src="/socket.io/socket.io.js"></script>
+
+        <script>
+            const msgForm = document.getElementById('msg-form');
+            msgForm.hidden = true;
+            const nameForm = document.getElementById('name-form');
+            const recentMsg = document.getElementById('recent_msg');
+
+
+            var socket = io();
+            // setTimeout(() => {
+            //     socket.emit("new-message", "hello")
+            // }, 3000)
+
+            socket.on("received-message", (msg, name) => {
+                displayMessage(msg, name)
+            })
+
+
+            socket.on('getName', () => {
+                nameForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = nameForm[0].value;
+
+                    if (!name) return;
+                    socket.emit('setName', name, () => {
+                        msgForm.hidden = false;
+                        nameForm.hidden = true;
+                    })
+                })
+            })
+
+
+            msgForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const msg = msgForm[0].value;
+
+                if (!msg) return;
+                socket.emit("new-message", msg, () => {
+                    displayMessage(msg, "You")
+                    msgForm[0].value = ''
+                })
+            })
+
+
+            function displayMessage(msg, name) {
+                const li = document.createElement('li');
+                li.textContent = name + ":" + " " + msg;
+                recentMsg.appendChild(li)
+            }
+        </script>
+
     </body>
 
 </html>

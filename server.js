@@ -17,11 +17,18 @@ app.get('/', (req, res) => {
 
 
 io.on('connection', (socket) => {
-    console.log("New Fucker Connected!");
-    socket.on("new-message", (data) => {
-        
-        socket.broadcast.emit("received-message", data)
+    io.to(socket.id).emit('getName');
+
+
+    socket.on("new-message", (data, callback) => {
+        socket.broadcast.emit("received-message", data, socket.name)
         // socket.emit("received-message", data)
+        callback();
+    })
+
+    socket.on("setName", (name, cb) => {
+        socket.name = name;
+        cb()
     })
 })
 
